@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+    <property name="LOG_FILE" value="${user.home}/logs/app.log"/>
+
+    <appender name="FILE-ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_FILE}</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${user.home}/logs/archived/app.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!-- each archived file, size max 5KB -->
+            <maxFileSize>3MB</maxFileSize>
+            <!-- total size of all archive files, if total size > 20KB,
+				it will delete old archived file -->
+            <totalSizeCap>5MB</totalSizeCap>
+            <!-- 60 days to keep -->
+            <!--            <maxHistory>60</maxHistory>-->
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>%d %p %c{1.} [%t] %m%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>
+                %d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n
+            </Pattern>
+        </layout>
+    </appender>
+
+    <springProfile name="dev | default">
+        <!--    rotataing policy for project-->
+        <logger name="com.qrcode" level="DEBUG" additivity="false">
+            <appender-ref ref="FILE-ROLLING"/>
+            <appender-ref ref="CONSOLE"/>
+        </logger>
+        <!--    rotatingpolicy for spring-->
+        <logger name="org.springframework" level="INFO" additivity="false">
+            <appender-ref ref="FILE-ROLLING"/>
+            <appender-ref ref="CONSOLE"/>
+        </logger>
+        <logger name="org.hibernate" level="DEBUG" additivity="false">
+            <appender-ref ref="FILE-ROLLING"/>
+            <appender-ref ref="CONSOLE"/>
+        </logger>
+
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="FILE-ROLLING"/>
+        </root>
+    </springProfile>
+
+    <springProfile name="prod">
+        <logger name="com.qrcode" level="INFO" additivity="false">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="FILE-ROLLING"/>
+        </logger>
+        <logger name="org.springframework" level="INFO" additivity="false">
+            <appender-ref ref="FILE-ROLLING"/>
+            <appender-ref ref="CONSOLE"/>
+        </logger>
+        <logger name="org.hibernate" level="INFO" additivity="false">
+            <appender-ref ref="FILE-ROLLING"/>
+            <appender-ref ref="CONSOLE"/>
+        </logger>
+
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="FILE-ROLLING"/>
+        </root>
+    </springProfile>
+
+</Configuration>

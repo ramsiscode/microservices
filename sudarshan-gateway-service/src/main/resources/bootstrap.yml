@@ -1,0 +1,39 @@
+spring:
+  profiles:
+    active: dev
+  application:
+    name: sudarshan-gateway-service
+  cloud:
+    config:
+      uri: http://192.168.181.88:8080
+      profile: dev
+      name: ng-gateway-service
+    gateway:
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Origin
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowed-origins: "*"
+            allowed-methods: "*"
+            allowed-headers: "*"
+server:
+  address: 192.168.181.88       
+
+hystrix:
+  command:
+    fallbackcmd:
+      execution:
+        isolation:
+          thread:
+            timeoutinmilliseconds: 5000
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - hystrix.stream
+          - "*"
+
